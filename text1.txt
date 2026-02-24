@@ -159,3 +159,43 @@ start_simple :-
       ;  writeln('NO - element not found.')
     ),
     writeln('Finished.').
+
+% Missionaries and Cannibals
+
+initial(state(3,3,left)).
+goal(state(0,0,right)).
+
+% Safe condition
+safe(M,C) :-
+    (M >= C ; M = 0),
+    MR is 3-M,
+    CR is 3-C,
+    (MR >= CR ; MR = 0).
+
+% Boat moves
+move(state(M,C,left), state(M2,C2,right)) :-
+    member((X,Y), [(1,0),(2,0),(0,1),(0,2),(1,1)]),
+    M2 is M-X, C2 is C-Y,
+    M2 >= 0, C2 >= 0,
+    safe(M2,C2).
+
+move(state(M,C,right), state(M2,C2,left)) :-
+    member((X,Y), [(1,0),(2,0),(0,1),(0,2),(1,1)]),
+    M2 is M+X, C2 is C+Y,
+    M2 =< 3, C2 =< 3,
+    safe(M2,C2).
+
+% Search
+path(S,S,Visited,Visited).
+path(S,G,Visited,Path) :-
+    move(S,Next),
+    \+ member(Next,Visited),
+    path(Next,G,[Next|Visited],Path).
+
+solve(Path) :-
+    initial(S),
+    goal(G),
+    path(S,G,[S],Path).
+
+% Run:
+% ?- solve(Path).
