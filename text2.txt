@@ -1,0 +1,233 @@
+% --- Define paths using path_fact/3 (only one direction) ---
+path_fact(gate, canteen, 5).
+path_fact(gate, library, 3).
+path_fact(gate, it, 3).
+path_fact(gate, gym, 3).
+path_fact(canteen, fcbs, 4).
+path_fact(library, fas, 6).
+path_fact(fas, siddha, 3).
+path_fact(canteen, it, 4).
+path_fact(it, girls_hostel, 4).
+path_fact(girls_hostel, boys_hostel, 2).
+path_fact(canteen, sport_room, 6).
+path_fact(canteen, fas, 2).
+path_fact(fas, fcbs, 6).
+path_fact(gym, girls_hostel, 4).
+path_fact(canteen, girls_hostel, 2).
+
+% --- Safe bidirectional path ---
+path(A, B, D) :- path_fact(A, B, D).
+path(A, B, D) :- path_fact(B, A, D).
+
+% --- Route using DFS ---
+route(Start, End, Path, Dist) :-
+    travel(Start, End, [Start], RevPath, Dist),
+    reverse(RevPath, Path).
+
+% Base case: direct path
+travel(Start, End, Visited, [End|Visited], Dist) :-
+    path(Start, End, Dist).
+
+% Recursive DFS
+travel(Start, End, Visited, Path, Dist) :-
+    path(Start, Next, D1),
+    \+ member(Next, Visited),         % skip already visited
+    travel(Next, End, [Next|Visited], Path, D2),
+    Dist is D1 + D2.
+
+% --- Find minimum distance path ---
+find_min([R], R) :- !.
+find_min([[P1,D1]|T], [P,D]) :-
+    find_min(T, [P2,D2]),
+    (D1 < D2 -> P = P1, D = D1 ; P = P2, D = D2).
+
+% --- Shortest path ---
+shortest(Start, End, ShortestPath, MinDist) :-
+    findall([P,D], route(Start, End, P, D), Results),
+    find_min(Results, [ShortestPath, MinDist]).
+
+% ===============================================================
+
+% simple_list_task2.pl
+% Load: ?- [simple_list_task2].
+% Run:  ?- start.
+
+start :-
+    write('Enter a list: '),
+    read(List),
+
+    first_element(List, First),
+    format('First: ~w~n', [First]),
+
+    last_element(List, Last),
+    format('Last: ~w~n', [Last]),
+
+    ( my_sum(List, Sum)
+      -> format('Sum: ~w~n', [Sum])
+      ;  writeln('Sum not applicable')
+    ),
+
+    my_reverse(List, Rev),
+    format('Reversed: ~w~n', [Rev]),
+
+    write('Enter element to insert: '),
+    read(Elem),
+
+    insert_end(List, Elem, EndList),
+    format('Insert end: ~w~n', [EndList]),
+
+    insert_at(List, 2, Elem, PosList),
+    format('Insert at pos 2: ~w~n', [PosList]).
+
+% First element
+first_element([H|_], H).
+
+% Last element
+last_element([X], X).
+last_element([_|T], X) :-
+    last_element(T, X).
+
+% Sum
+my_sum([], 0).
+my_sum([H|T], S) :-
+    my_sum(T, S1),
+    S is H + S1.
+
+% Reverse (with accumulator)
+my_reverse(L, R) :-
+    rev(L, [], R).
+
+rev([], Acc, Acc).
+rev([H|T], Acc, R) :-
+    rev(T, [H|Acc], R).
+
+% Insert at end
+insert_end([], X, [X]).
+insert_end([H|T], X, [H|R]) :-
+    insert_end(T, X, R).
+
+% Insert at position (1-based)
+insert_at(L, 1, X, [X|L]).
+insert_at([H|T], Pos, X, [H|R]) :-
+    Pos > 1,
+    P1 is Pos - 1,
+    insert_at(T, P1, X, R).
+
+% =============================================
+
+% simple_list_task1.pl
+% Load: ?- [simple_list_task1].
+% Run:  ?- start.
+
+start :-
+    write('Enter a list: '),
+    read(List),
+
+    list_length(List, Len),
+    format('Length: ~w~n', [Len]),
+
+    write('Enter element: '),
+    read(Elem),
+
+    ( my_member(Elem, List)
+      -> writeln('YES - Member')
+      ;  writeln('NO - Not Member')
+    ).
+
+% User-defined member
+my_member(X, [X|_]).
+my_member(X, [_|T]) :-
+    my_member(X, T).
+
+% User-defined length
+list_length([], 0).
+list_length([_|T], N) :-
+    list_length(T, N1),
+    N is N1 + 1.
+
+% ===============================================
+
+% simple_list.pl
+% Load: ?- [simple_list].
+% Run:  ?- start.
+
+start :-
+    nl,
+    write('Enter a list (e.g., [a,b,c].): '),
+    read(List),
+
+    format('List: ~w~n', [List]),
+
+    length(List, Len),
+    format('Length: ~w~n', [Len]),
+
+    write('Enter element to check: '),
+    read(Elem),
+
+    ( member(Elem, List)
+      -> writeln('YES - element is in the list.')
+      ;  writeln('NO - element not found.')
+    ),
+
+    writeln('Finished.').
+
+% ==================================================
+
+% (c) LAST ELEMENT
+% If list has one element, that is last
+last_element([X], X).
+
+% Recursive case:
+last_element([_ | T], X) :-
+    last_element(T, X).
+
+% ========================================
+
+% (b) SUM OF ELEMENTS
+% Base case: sum of empty list = 0
+sum_list([], 0).
+
+% Recursive case:
+sum_list([H | T], S) :-
+    sum_list(T, S1),
+    S is H + S1.
+
+% ============================================
+
+% (a) LENGTH OF A LIST
+% Base case: empty list has length 0
+list_length([], 0).
+
+% Recursive case:
+% Count 1 + length of tail
+list_length([_ | T], N) :-
+    list_length(T, N1),
+    N is N1 + 1.
+
+% ============================================
+
+move(square(1,1),square(1,2)).
+move(square(1,2),square(8,2)).
+move(square(8,2),square(8,5)).
+move(square(8,5),square(7,5)).
+move(square(7,5),square(7,6)).
+move(square(7,6),square(2,6)).
+move(square(2,6),square(2,3)).
+move(square(2,3),square(1,3)).
+move(square(7,5),square(7,3)).
+move(square(7,3),square(1,3)).
+move(square(1,3),square(1,8)).
+move(square(1,8),square(3,8)).
+move(square(3,8),square(3,9)).
+move(square(3,9),square(9,9)).
+
+
+route(Current,Exit,Visited,[Current|Path]):-
+move(Current,Next),\+member(Next,Visited),
+route(Next,Exit,Visited,Path).
+
+route(X,X,_[X]).
+
+solve(Path) :-
+    route(square(1,1), square(9,9), [square(1,1)], RevPath),
+    reverse(RevPath, Path).
