@@ -1,7 +1,5 @@
-% ============================================================
 %  CAMPUS PATH FINDER
 %  Usage: ?- shortest(gate, boys_hostel, Path, Dist).
-% ============================================================
 
 % One-directional path facts (node, node, distance)
 path_fact(gate, canteen, 5).
@@ -50,10 +48,8 @@ shortest(Start, End, ShortestPath, MinDist) :-
     find_min(Results, [ShortestPath, MinDist]).
 
 
-% ============================================================
 %  MAZE SOLVER (Square Grid)
 %  Usage: ?- solve(Path).
-% ============================================================
 
 move(square(1,1), square(1,2)).
 move(square(1,2), square(8,2)).
@@ -80,10 +76,8 @@ solve(Path) :-
     maze_route(square(1,1), square(9,9), [square(1,1)], Path).
 
 
-% ============================================================
 %  LIST OPERATIONS - BASIC
 %  Usage: ?- list_length([a,b,c], N).
-% ============================================================
 
 % Length
 list_length([], 0).
@@ -121,11 +115,8 @@ insert_at([H|T], Pos, X, [H|R]) :-
     P1 is Pos - 1,
     insert_at(T, P1, X, R).
 
-
-% ============================================================
 %  INTERACTIVE MENUS
 %  Usage: ?- start_task1.  / ?- start_task2.  / ?- start_simple.
-% ============================================================
 
 % Task 1: Length and membership check
 start_task1 :-
