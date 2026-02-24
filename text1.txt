@@ -199,3 +199,38 @@ solve(Path) :-
 
 % Run:
 % ?- solve(Path).
+
+=============================================================
+
+% State: state(Farmer, Tiger, Goat, Grass)
+initial_state(state(right, right, right, right)).
+goal_state(state(left, left, left, left)).
+
+opposite(left, right). 
+opposite(right, left).
+
+unsafe(state(F, T, G, _)) :- F \= T, T = G.
+unsafe(state(F, _, G, R)) :- F \= G, G = R.
+safe(State) :- \+ unsafe(State).
+
+move(state(F, T, G, R), state(NewF, T, G, R)) :- opposite(F, NewF), safe(state(NewF, T, G, R)).
+move(state(state(F, T, G, R)), state(NewF, NewT, G, R)) :- F = T, opposite(F, NewF), NewT = NewF, safe(state(NewF, NewT, G, R)).
+move(state(F, T, G, R), state(NewF, T, NewG, R)) :- F = G, opposite(F, NewF), NewG = NewF, safe(state(NewF, T, NewG, R)).
+move(state(F, T, G, R), state(NewF, T, G, NewR)) :- F = R, opposite(F, NewF), NewR = NewF, safe(state(NewF, T, G, NewR)).
+
+find_route(State, State, Visited, Route) :- reverse(Visited, Route).
+find_route(Current, Goal, Visited, Route) :-
+    move(Current, Next),
+    \+ member(Next, Visited),
+    find_route(Next, Goal, [Next | Visited], Route).
+
+show_steps([]).
+show_steps([H|T]) :- write(H), nl, show_steps(T).
+
+solve :-
+    initial_state(Start),
+    goal_state(Goal),
+    find_route(Start, Goal, [Start], Route),
+    nl, write('Solution Path Found:'), nl,
+    show_steps(Route),
+    nl, write('--- Everyone is safe on the left side! ---'), nl.
