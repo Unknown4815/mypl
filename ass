@@ -1,0 +1,235 @@
+############################################
+# Q1: y = 5x^2 + 2x + 3
+############################################
+
+.data
+prompt1: .asciiz "Enter x: "
+result1: .asciiz "Result: "
+
+.text
+.globl main
+
+main:
+    # Prompt
+    li $v0, 4
+    la $a0, prompt1
+    syscall
+
+    # Read x
+    li $v0, 5
+    syscall
+    move $t0, $v0   # x
+
+    # 5x^2
+    mul $t1, $t0, $t0
+    li $t2, 5
+    mul $t1, $t1, $t2
+
+    # 2x
+    li $t2, 2
+    mul $t2, $t0, $t2
+
+    # y = 5x^2 + 2x + 3
+    add $t3, $t1, $t2
+    addi $t3, $t3, 3
+
+    # Print result
+    li $v0, 4
+    la $a0, result1
+    syscall
+
+    li $v0, 1
+    move $a0, $t3
+    syscall
+
+    li $v0, 10
+    syscall
+
+
+############################################
+# Q5: Sum and Difference
+############################################
+
+.data
+p1: .asciiz "Enter first number: "
+p2: .asciiz "Enter second number: "
+sumMsg: .asciiz "Sum: "
+diffMsg: .asciiz "Difference: "
+
+.text
+main2:
+
+    li $v0, 4
+    la $a0, p1
+    syscall
+
+    li $v0, 5
+    syscall
+    move $t0, $v0
+
+    li $v0, 4
+    la $a0, p2
+    syscall
+
+    li $v0, 5
+    syscall
+    move $t1, $v0
+
+    add $t2, $t0, $t1
+    sub $t3, $t0, $t1
+
+    li $v0, 4
+    la $a0, sumMsg
+    syscall
+
+    li $v0, 1
+    move $a0, $t2
+    syscall
+
+    li $v0, 4
+    la $a0, diffMsg
+    syscall
+
+    li $v0, 1
+    move $a0, $t3
+    syscall
+
+    li $v0, 10
+    syscall
+
+
+############################################
+# Q6: Multiply, Divide, Remainder
+############################################
+
+.text
+main3:
+
+    li $v0, 5
+    syscall
+    move $t0, $v0
+
+    li $v0, 5
+    syscall
+    move $t1, $v0
+
+    mul $t2, $t0, $t1
+
+    div $t0, $t1
+    mflo $t3
+    mfhi $t4
+
+    li $v0, 10
+    syscall
+
+
+############################################
+# Q7: Rectangle Area & Perimeter
+############################################
+
+.text
+main4:
+
+    li $v0, 5
+    syscall
+    move $t0, $v0   # width
+
+    li $v0, 5
+    syscall
+    move $t1, $v0   # height
+
+    mul $t2, $t0, $t1   # area
+
+    add $t3, $t0, $t1
+    mul $t3, $t3, 2     # perimeter
+
+    li $v0, 10
+    syscall
+
+
+############################################
+# Q8: Even / Odd using %
+############################################
+
+.text
+main5:
+
+    li $v0, 5
+    syscall
+    move $t0, $v0
+
+    li $t1, 2
+    div $t0, $t1
+    mfhi $t2   # remainder
+
+    li $v0, 10
+    syscall
+
+
+############################################
+# Q9: Box Surface Area & Volume
+############################################
+
+.text
+main6:
+
+    li $v0, 5
+    syscall
+    move $t0, $v0  # length
+
+    li $v0, 5
+    syscall
+    move $t1, $v0  # width
+
+    li $v0, 5
+    syscall
+    move $t2, $v0  # height
+
+    # volume
+    mul $t3, $t0, $t1
+    mul $t3, $t3, $t2
+
+    # surface area = 2(lw + lh + wh)
+    mul $t4, $t0, $t1
+    mul $t5, $t0, $t2
+    mul $t6, $t1, $t2
+
+    add $t7, $t4, $t5
+    add $t7, $t7, $t6
+    mul $t7, $t7, 2
+
+    li $v0, 10
+    syscall
+
+
+############################################
+# Q10: s = (a + b) - (c + 101)
+############################################
+
+.text
+main7:
+
+    li $v0, 5
+    syscall
+    move $t0, $v0   # a
+
+    li $v0, 5
+    syscall
+    move $t1, $v0   # b
+
+    li $v0, 5
+    syscall
+    move $t2, $v0   # c
+
+    add $t3, $t0, $t1
+    addi $t4, $t2, 101
+
+    sub $t5, $t3, $t4   # s
+
+    li $v0, 10
+    syscall
+
+# Expected result:
+# a=5, b=10, c=-30
+# s = (5+10) - (-30+101)
+# s = 15 - 71 = -56
