@@ -1,0 +1,256 @@
+package PACKAGE_NAME;
+// Example: package studentuser;
+
+import java.time.Duration;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+public class CLASS_NAME {
+    // Example: public class student_test
+
+    WebDriver driver;
+
+    @BeforeClass
+    public void setup() {
+
+        System.setProperty(
+                "webdriver.chrome.driver",
+                "CHROMEDRIVER_PATH");
+        // Example: "C:\\Drivers\\chromedriver.exe"
+        // Note: Use double backslash \\ for Windows paths
+
+        driver = new ChromeDriver();
+
+        driver.manage().window().maximize();
+
+        driver.manage().timeouts()
+                .pageLoadTimeout(Duration.ofSeconds(10));
+
+        driver.get("BASE_URL");
+        // Example: "http://localhost/student/admin"
+    }
+
+    @Test(priority = 1)
+    public void adminLogin() throws InterruptedException {
+
+        Thread.sleep(2000);
+
+        WebElement username =
+                driver.findElement(By.name("USERNAME_FIELD_NAME"));
+        // Example: By.name("username")
+
+        WebElement password =
+                driver.findElement(By.name("PASSWORD_FIELD_NAME"));
+        // Example: By.name("password")
+
+        if (username.getAttribute("value").isEmpty()) {
+            System.out.println("USERNAME_FIELD_NAME is empty");
+            // Example: "username is empty"
+        }
+
+        if (password.getAttribute("value").isEmpty()) {
+            System.out.println("PASSWORD_FIELD_NAME is empty");
+            // Example: "password is empty"
+        }
+
+        username.sendKeys("ADMIN_USERNAME");
+        // Example: "admin"
+
+        password.sendKeys("ADMIN_PASSWORD");
+        // Example: "admin@123"
+
+        driver.findElement(
+                By.xpath("LOGIN_BUTTON_XPATH"))
+                .click();
+        // Example: "//*[@id=\"login-frm\"]/button[1]"
+
+        Thread.sleep(3000);
+    }
+
+    @Test(priority = 2)
+    public void urlValidation() throws InterruptedException {
+
+        driver.findElement(
+                By.xpath("NAV_MENU_ITEM_XPATH"))
+                .click();
+        // Example: "//*[@id=\"Employee\"]"
+        // Tip: inspect the sidebar/nav link and copy XPath
+
+        String currentURL =
+                driver.getCurrentUrl();
+
+        String expectedURL =
+                "EXPECTED_URL_AFTER_NAVIGATION";
+        // Example: "http://localhost/student/admin/?page=students"
+
+        if (currentURL.equals(expectedURL)) {
+
+            System.out.println(
+                    "URL Validation Success");
+
+        } else {
+
+            System.out.println(
+                    "URL Validation Fail");
+        }
+
+        Thread.sleep(2000);
+    }
+
+    @Test(priority = 3)
+    public void searchRECORD_NAME() throws InterruptedException {
+        // Example method name: searchStudent
+
+        driver.findElement(
+                By.xpath("SEARCH_INPUT_XPATH"))
+                .sendKeys("SEARCH_KEYWORD");
+        // Example xpath: "//*[@id=\"table_filter\"]/label/input"
+        // Example keyword: "Ad"
+
+        Thread.sleep(2000);
+    }
+
+    @Test(priority = 4)
+    public void addRECORD_NAME() throws InterruptedException {
+        // Example method name: addStudent
+
+        driver.findElement(
+                By.id("ADD_BUTTON_ID"))
+                .click();
+        // Example: "new_std_btn"
+
+        Thread.sleep(2000);
+
+        driver.findElement(By.name("FIELD_1_NAME"))
+                .sendKeys("FIELD_1_VALUE");
+        // Example: By.name("firstname") → "Stanely"
+
+        driver.findElement(By.name("FIELD_2_NAME"))
+                .sendKeys("FIELD_2_VALUE");
+        // Example: By.name("lastname") → "Lambert"
+
+        driver.findElement(By.name("FIELD_3_NAME"))
+                .sendKeys("FIELD_3_VALUE");
+        // Example: By.name("grade") → "Grade 11"
+
+        driver.findElement(By.name("FIELD_4_NAME"))
+                .sendKeys("FIELD_4_VALUE");
+        // Example: By.name("phone") → "0777889090"
+
+        // Add or remove fields above as needed
+
+        driver.findElement(
+                By.xpath("SAVE_BUTTON_XPATH"))
+                .click();
+        // Example: "//button[contains(text(),'Save')]"
+
+        Thread.sleep(2000);
+
+        Alert alert =
+                driver.switchTo().alert();
+
+        System.out.println(
+                "RECORD_NAME Saving Alert Message is: "
+                        + alert.getText());
+        // Example prefix: "Student Saving Alert Message is: "
+
+        alert.accept();
+
+        Thread.sleep(2000);
+    }
+
+    @Test(priority = 5)
+    public void deleteRECORD_NAME() throws InterruptedException {
+        // Example method name: deleteStudent
+
+        driver.findElement(
+                By.xpath("DELETE_BUTTON_XPATH"))
+                .click();
+        // Example: "//*[@id=\"table\"]/tbody/tr[1]/td[COL_INDEX]/center/button[2]/i"
+        // tr[1] = first row | button[2] = delete button
+        // COL_INDEX = column number where action buttons are (e.g. 7)
+
+        Thread.sleep(2000);
+
+        Alert alert =
+                driver.switchTo().alert();
+
+        System.out.println(
+                "RECORD_NAME Deleting Alert Message is: "
+                        + alert.getText());
+        // Example prefix: "Student Deleting Alert Message is: "
+
+        alert.dismiss();
+        // dismiss = Cancel (does NOT delete)
+
+        Thread.sleep(2000);
+    }
+
+    @Test(priority = 6)
+    public void updateRECORD_NAME() throws InterruptedException {
+        // Example method name: updateStudent
+
+        driver.findElement(
+                By.xpath("EDIT_BUTTON_XPATH"))
+                .click();
+        // Example: "(//*[@id=\"table\"]/tbody/tr[1]/td[COL_INDEX]/center/button)[1]"
+        // tr[1] = first row | button[1] = edit button (first button)
+
+        Thread.sleep(2000);
+
+        WebElement FIELD_TO_UPDATE =
+                driver.findElement(By.name("FIELD_TO_UPDATE_NAME"));
+        // Example variable: lastName
+        // Example: By.name("lastname")
+
+        FIELD_TO_UPDATE.clear();
+
+        FIELD_TO_UPDATE.sendKeys("UPDATED_VALUE");
+        // Example: "User"
+
+        driver.findElement(
+                By.name("SAVE_UPDATE_BUTTON_NAME"))
+                .click();
+        // Example: By.name("save")
+
+        Thread.sleep(2000);
+
+        Alert alert =
+                driver.switchTo().alert();
+
+        System.out.println(
+                "RECORD_NAME Updating Alert Message is: "
+                        + alert.getText());
+        // Example prefix: "Student Updating Alert Message is: "
+
+        alert.accept();
+
+        Thread.sleep(2000);
+    }
+
+    @Test(priority = 7)
+    public void logout() {
+
+        driver.findElement(
+                By.xpath("LOGOUT_BUTTON_XPATH"))
+                .click();
+        // Example: "/html/body/nav/div/div[2]/a"
+
+        System.out.println(
+                "Logout successful");
+    }
+
+    @AfterClass
+    public void closeBrowser() {
+
+        if (driver != null) {
+            driver.quit();
+        }
+    }
+}
