@@ -1,0 +1,75 @@
+package pac;
+
+import java.time.Duration;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WindowType;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.Select;
+
+public class ca {
+
+    public static void main(String[] args) throws InterruptedException {
+
+        System.setProperty("webdriver.chrome.driver", "C:\\Drivers\\chromedriver.exe");
+
+        WebDriver driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+        // Open the form page
+        driver.get("file:///C:/Users/kashm/Downloads/home.html");
+        Thread.sleep(2000);
+
+        // Fill text fields
+        driver.findElement(By.id("fname")).sendKeys("Ravi");
+        Thread.sleep(800);
+
+        driver.findElement(By.id("lname")).sendKeys("Kathir");
+        Thread.sleep(800);
+
+        driver.findElement(By.id("email")).sendKeys("Ravi@gmail.com");
+        Thread.sleep(800);
+
+        driver.findElement(By.id("password")).sendKeys("ravi@12345");
+        Thread.sleep(800);
+
+        driver.findElement(By.id("confirm")).sendKeys("ravi@12345");
+        Thread.sleep(800);
+
+        // Radio button and checkbox
+        driver.findElement(By.name("gender")).click();
+        Thread.sleep(800);
+
+        driver.findElement(By.name("hobby")).click();
+        Thread.sleep(800);
+
+        // Dropdowns
+        new Select(driver.findElement(By.id("income"))).selectByVisibleText("Employed");
+        Thread.sleep(800);
+
+        driver.findElement(By.id("age")).sendKeys("30");
+        Thread.sleep(800);
+
+        // Bio
+        driver.findElement(By.id("bio")).sendKeys(
+            "A dedicated and enthusiastic university graduate with a background in Computer Science and industry experience."
+        );
+        Thread.sleep(1500);
+
+        // Submit
+        driver.findElement(By.xpath("//button[@type='submit']")).click();
+        Thread.sleep(2000);
+
+        // Open Google in a new tab
+        driver.switchTo().newWindow(WindowType.TAB);
+        driver.get("https://www.google.com");
+        Thread.sleep(2000);
+        System.out.println("New tab opened: " + driver.getTitle());
+
+        // driver.quit();
+    }
+}
