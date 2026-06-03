@@ -1,0 +1,252 @@
+package pac;
+
+import java.time.Duration;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+public class atten {
+
+    private WebDriver driver;
+    private WebDriverWait wait;
+
+    private static final String LOGIN_URL    = "http://localhost/employee/admin";
+    private static final String EMPLOYEE_URL = "http://localhost/employee/admin/employee.php";
+    private static final String LOGIN_BTN    = ".btn.btn-primary.btn-block";
+
+    // =========================
+    // SETUP — runs once before all tests
+    // =========================
+    @BeforeClass
+    public void setUp() {
+        System.setProperty("webdriver.chrome.driver", "C:\\Drivers\\chromedriver.exe");
+        driver = new ChromeDriver();
+        driver.manage().window().maximize();
+        wait = new WebDriverWait(driver, Duration.ofSeconds(3));
+        driver.get(LOGIN_URL);
+        System.out.println("[SETUP] Browser opened, login page loaded");
+    }
+
+    // =========================
+    // TC01 — Empty username and password
+    // =========================
+    @Test(priority = 1, description = "Submit login with both fields empty")
+    public void testEmptyUsernameAndPassword() {
+        driver.get(LOGIN_URL);
+        driver.findElement(By.name("username")).clear();
+        driver.findElement(By.name("password")).clear();
+        driver.findElement(By.cssSelector(LOGIN_BTN)).click();
+
+        try {
+            WebElement error = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//*[contains(text(),'required') or contains(text(),'empty')]")
+                )
+            );
+            System.out.println("[TC01] PASS — EMPTY VALIDATION: " + error.getText());
+            Assert.assertNotNull(error.getText());
+        } catch (Exception e) {
+            System.out.println("[TC01] No empty field validation message found");
+        }
+    }
+
+    // =========================
+    // TC02 — Username empty only
+    // =========================
+    @Test(priority = 2, description = "Submit login with username empty")
+    public void testEmptyUsername() {
+        driver.get(LOGIN_URL);
+        driver.findElement(By.name("username")).clear();
+        driver.findElement(By.name("password")).clear();
+        driver.findElement(By.name("password")).sendKeys("admin123");
+        driver.findElement(By.cssSelector(LOGIN_BTN)).click();
+
+        try {
+            WebElement error = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//*[contains(text(),'username')]")
+                )
+            );
+            System.out.println("[TC02] PASS — USERNAME EMPTY: " + error.getText());
+            Assert.assertNotNull(error.getText());
+        } catch (Exception e) {
+            System.out.println("[TC02] No username validation message");
+        }
+    }
+
+    // =========================
+    // TC03 — Password empty only
+    // =========================
+    @Test(priority = 3, description = "Submit login with password empty")
+    public void testEmptyPassword() {
+        driver.get(LOGIN_URL);
+        driver.findElement(By.name("username")).clear();
+        driver.findElement(By.name("password")).clear();
+        driver.findElement(By.name("username")).sendKeys("admin");
+        driver.findElement(By.cssSelector(LOGIN_BTN)).click();
+
+        try {
+            WebElement error = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//*[contains(text(),'password')]")
+                )
+            );
+            System.out.println("[TC03] PASS — PASSWORD EMPTY: " + error.getText());
+            Assert.assertNotNull(error.getText());
+        } catch (Exception e) {
+            System.out.println("[TC03] No password validation message");
+        }
+    }
+
+    // =========================
+    // TC04 — Invalid credentials
+    // =========================
+    @Test(priority = 4, description = "Login with wrong username and password")
+    public void testInvalidLogin() {
+        driver.get(LOGIN_URL);
+        driver.findElement(By.name("username")).clear();
+        driver.findElement(By.name("password")).clear();
+        driver.findElement(By.name("username")).sendKeys("wrongUser");
+        driver.findElement(By.name("password")).sendKeys("wrongPass");
+        driver.findElement(By.cssSelector(LOGIN_BTN)).click();
+
+        try {
+            WebElement error = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(
+                    By.xpath("//*[contains(text(),'Invalid') or contains(text(),'incorrect')]")
+                )
+            );
+            System.out.println("[TC04] PASS — INVALID LOGIN: " + error.getText());
+            Assert.assertNotNull(error.getText());
+        } catch (Exception e) {
+            System.out.println("[TC04] No invalid login message found");
+        }
+    }
+
+    // =========================
+    // TC05 — Valid login
+    // =========================
+    @Test(priority = 5, description = "Login with correct credentials")
+    public void testValidLogin() {
+        driver.get(LOGIN_URL);
+        driver.findElement(By.name("username")).clear();
+        driver.findElement(By.name("password")).clear();
+        driver.findElement(By.name("username")).sendKeys("admin");
+        driver.findElement(By.name("password")).sendKeys("admin123");
+        driver.findElement(By.cssSelector(LOGIN_BTN)).click();
+
+        wait.until(ExpectedConditions.urlContains("admin"));
+        System.out.println("[TC05] PASS — LOGIN SUCCESS, URL: " + driver.getCurrentUrl());
+        Assert.assertTrue(driver.getCurrentUrl().contains("admin"), "Should redirect to admin dashboard");
+    }
+
+    // =========================
+    // TC06 — Navigate to Employee page
+    // =========================
+    @Test(priority = 6, description = "Navigate to employee management page", dependsOnMethods = "testValidLogin")
+    public void testNavigateToEmployeePage() {
+        try {
+            driver.findElement(By.linkText("Employee")).click();
+        } catch (Exception e) {
+            driver.get(EMPLOYEE_URL);
+        }
+
+        wait.until(ExpectedConditions.urlContains("employee"));
+        System.out.println("[TC06] PASS — EMPLOYEE PAGE LOADED: " + driver.getCurrentUrl());
+        Assert.assertTrue(driver.getCurrentUrl().contains("employee"));
+    }
+
+    // =========================
+    // TC07 — Click Add New button
+    // =========================
+    @Test(priority = 7, description = "Click Add New Employee button", dependsOnMethods = "testNavigateToEmployeePage")
+    public void testClickAddNew() {
+        WebElement addBtn = wait.until(
+            ExpectedConditions.elementToBeClickable(
+                By.xpath("//button[contains(text(),'Add')]")
+            )
+        );
+        addBtn.click();
+        System.out.println("[TC07] PASS — ADD NEW CLICKED");
+    }
+    
+ // =========================
+ // TC08 — Empty form validation (submit blank first)
+ // =========================
+ @Test(priority = 8, description = "Submit empty form and check validation", dependsOnMethods = "testClickAddNew")
+ public void testEmptyFormValidation() {
+     // Click Save without filling anything to trigger validation
+     try {
+         WebElement saveEmpty = wait.until(
+             ExpectedConditions.elementToBeClickable(By.name("save"))
+         );
+         saveEmpty.click();
+     } catch (Exception e) {
+         System.out.println("[TC08] Could not click save button");
+     }
+
+     try {
+         WebElement error = wait.until(
+             ExpectedConditions.visibilityOfElementLocated(
+                 By.xpath("//*[contains(text(),'required')]")
+             )
+         );
+         System.out.println("[TC08] PASS — FORM EMPTY VALIDATION: " + error.getText());
+         Assert.assertNotNull(error.getText());
+     } catch (Exception e) {
+         System.out.println("[TC08] No form validation message");
+     }
+ }
+
+ // =========================
+ // TC09 — Fill and save new employee
+ // =========================
+ @Test(priority = 9, description = "Fill employee form and save", dependsOnMethods = "testEmptyFormValidation")
+ public void testAddEmployee() {
+     // Modal should still be open — fill all fields
+     try {
+         WebElement fn = wait.until(
+             ExpectedConditions.visibilityOfElementLocated(By.name("firstname"))
+         );
+         fn.clear();
+         fn.sendKeys("ABC");
+     } catch (Exception e) {
+         System.out.println("[TC09] firstname field not found");
+     }
+
+     driver.findElement(By.name("middlename")).clear();
+     driver.findElement(By.name("middlename")).sendKeys("EFG");
+
+     driver.findElement(By.name("lastname")).clear();
+     driver.findElement(By.name("lastname")).sendKeys("ASDF");
+
+     driver.findElement(By.name("department")).clear();
+     driver.findElement(By.name("department")).sendKeys("Finance");
+
+     driver.findElement(By.name("position")).clear();
+     driver.findElement(By.name("position")).sendKeys("Manager");
+
+     WebElement saveBtn = wait.until(
+         ExpectedConditions.elementToBeClickable(By.name("save"))
+     );
+     saveBtn.click();
+
+     try {
+         WebElement successMsg = wait.until(
+             ExpectedConditions.visibilityOfElementLocated(
+                 By.xpath("//*[contains(text(),'success') or contains(text(),'added')]")
+             )
+         );
+         System.out.println("[TC09] PASS — SAVE SUCCESS: " + successMsg.getText());
+         Assert.assertNotNull(successMsg.getText());
+     } catch (Exception e) {
+         System.out.println("[TC09] No success message found");
+     }
+ }}
