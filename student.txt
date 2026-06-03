@@ -1,0 +1,222 @@
+package studentuser_jar_maven;
+
+import java.time.Duration;
+
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+public class student_test_jar_maven {
+
+
+WebDriver driver;
+
+@BeforeClass
+public void setup() {
+
+    System.setProperty(
+            "webdriver.chrome.driver",
+            "C:\\Drivers\\chromedriver.exe");
+
+    driver = new ChromeDriver();
+
+    driver.manage().window().maximize();
+
+    driver.manage().timeouts()
+            .pageLoadTimeout(Duration.ofSeconds(10));
+
+    driver.get("http://localhost/student/admin");
+}
+
+@Test(priority = 1)
+public void adminLogin() throws InterruptedException {
+
+    Thread.sleep(2000);
+
+    WebElement username =
+            driver.findElement(By.name("username"));
+
+    WebElement password =
+            driver.findElement(By.name("password"));
+
+    if (username.getAttribute("value").isEmpty()) {
+        System.out.println("username is empty");
+    }
+
+    if (password.getAttribute("value").isEmpty()) {
+        System.out.println("password is empty");
+    }
+
+    username.sendKeys("admin");
+    password.sendKeys("admin@123");
+
+    driver.findElement(
+            By.xpath("//*[@id=\"login-frm\"]/button[1]"))
+            .click();
+
+    Thread.sleep(3000);
+}
+
+@Test(priority = 2)
+public void urlValidation() throws InterruptedException {
+
+    driver.findElement(
+            By.xpath("//*[@id=\"Employee\"]"))
+            .click();
+
+    String currentURL =
+            driver.getCurrentUrl();
+
+    String expectedURL =
+            "http://localhost/student/admin/?page=students";
+
+    if (currentURL.equals(expectedURL)) {
+
+        System.out.println(
+                "URL Validation Success");
+
+    } else {
+
+        System.out.println(
+                "URL Validation Fail");
+    }
+
+    Thread.sleep(2000);
+}
+
+@Test(priority = 3)
+public void searchStudent() throws InterruptedException {
+
+    driver.findElement(
+            By.xpath("//*[@id=\"table_filter\"]/label/input"))
+            .sendKeys("Ad");
+
+    Thread.sleep(2000);
+}
+
+@Test(priority = 4)
+public void addStudent() throws InterruptedException {
+
+    System.out.println(driver.getCurrentUrl());
+
+    Thread.sleep(3000);
+
+    WebElement newStudentBtn = driver.findElement(By.id("new_std_btn"));
+
+    new Actions(driver).moveToElement(newStudentBtn).click().perform();
+
+    Thread.sleep(2000); // wait for modal to fully open
+
+    driver.findElement(By.name("firstname"))
+            .sendKeys("Stanely");
+
+    driver.findElement(By.name("lastname"))
+            .sendKeys("Lambert");
+
+    driver.findElement(By.name("grade"))
+            .sendKeys("Grade 11");
+
+    driver.findElement(By.name("phone"))
+            .sendKeys("0777889090");
+
+    driver.findElement(
+            By.xpath("//button[contains(text(),'Save')]"))
+            .click();
+
+    Thread.sleep(2000);
+
+    Alert alert =
+            driver.switchTo().alert();
+
+    System.out.println(
+            "Student Saving Alert Message is: "
+                    + alert.getText());
+
+    alert.accept();
+
+    Thread.sleep(2000);
+}
+
+@Test(priority = 5)
+public void deleteStudent() throws InterruptedException {
+
+    driver.findElement(
+            By.xpath("//*[@id=\"table\"]/tbody/tr[1]/td[7]/center/button[2]/i"))
+            .click();
+
+    Thread.sleep(2000);
+
+    Alert alert =
+            driver.switchTo().alert();
+
+    System.out.println(
+            "Student Deleting Alert Message is: "
+                    + alert.getText());
+
+    alert.dismiss();
+
+    Thread.sleep(2000);
+}
+
+@Test(priority = 6)
+public void updateStudent() throws InterruptedException {
+
+    driver.findElement(
+            By.xpath("(//*[@id=\"table\"]/tbody/tr[1]/td[7]/center/button)[1]"))
+            .click();
+
+    Thread.sleep(2000);
+
+    WebElement lastName =
+            driver.findElement(By.name("lastname"));
+
+    lastName.clear();
+
+    lastName.sendKeys("User");
+
+    driver.findElement(
+            By.name("save"))
+            .click();
+
+    Thread.sleep(2000);
+
+    Alert alert =
+            driver.switchTo().alert();
+
+    System.out.println(
+            "Student Updating Alert Message is: "
+                    + alert.getText());
+
+    alert.accept();
+
+    Thread.sleep(2000);
+}
+
+@Test(priority = 7)
+public void logout() {
+
+    driver.findElement(
+            By.xpath("/html/body/nav/div/div[2]/a"))
+            .click();
+
+    System.out.println(
+            "Logout successful");
+}
+
+@AfterClass
+public void closeBrowser() {
+
+    if (driver != null) {
+        driver.quit();
+    }
+}
+
+
+}
