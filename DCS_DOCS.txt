@@ -1,0 +1,506 @@
+package Test;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.JavascriptExecutor;
+import java.time.Duration;
+
+public class Test3 {
+    
+    public static void main(String[] args) throws InterruptedException {
+        
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\Student\\Downloads\\chromedriver-win32\\chromedriver.exe");
+        
+        WebDriver driver = new ChromeDriver();
+        
+        try {
+            System.out.println(" TEST EXECUTION STARTED \n");
+            
+            //a.Open the file
+            driver.get("file:///C:/Users/Student/Desktop/assessment.html");
+            System.out.println("a.HTML file opened");
+            
+            //b.Maximize browser
+            driver.manage().window().maximize();
+            System.out.println("b.Browser maximized");
+            
+            //c.Full Name
+            driver.findElement(By.id("name")).sendKeys("Test User");
+            System.out.println("c.Full Name: Test User");
+            
+            //d.Email
+            driver.findElement(By.id("email")).sendKeys("test@gmail.com");
+            System.out.println("d. Email: test@gmail.com");
+            
+            //e.Password
+            driver.findElement(By.id("password")).sendKeys("Test@123");
+            System.out.println(" e.Password: Test@123");
+            
+            //f.Mobile Number
+            driver.findElement(By.id("mobile")).sendKeys("0765643212");
+            System.out.println("f.Mobile: 0765643212");
+            
+            //g.Gender
+            driver.findElement(By.xpath("//input[@value='female']")).click();
+            System.out.println("g.Gender: Female");
+            
+            //h. Hobbies 
+            driver.findElement(By.id("reading")).click();
+            driver.findElement(By.id("music")).click();
+            System.out.println("h. Hobbies: Reading, Music");
+            
+            // i.Country
+            driver.findElement(By.id("country")).sendKeys("Sri Lanka");
+            System.out.println("i. Country: Sri Lanka");
+            
+            // j.Experience
+            WebElement slider = driver.findElement(By.id("experience"));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].value = 8;", slider);
+            System.out.println("j. Experience=8");
+            
+            // k.Date of Birth
+            driver.findElement(By.id("dob")).sendKeys("2000-01-01");
+            System.out.println("k. Date of Birth: 2000-01-01");
+            
+            // l.Submit button
+            driver.findElement(By.xpath("//button[@type='submit']")).click();
+            System.out.println("l. Form submitted successfully");
+            
+            Thread.sleep(500);
+            
+            //m.Clear name and submit
+            driver.findElement(By.id("name")).clear();
+            System.out.println("\n--- VALIDATION TEST ---");
+            System.out.println("Name field cleared");
+            
+            driver.findElement(By.xpath("//button[@type='submit']")).click();
+            System.out.println("Submit clicked with empty name");
+            
+            Thread.sleep(500);
+            
+            // n.printing the validation message
+            WebElement nameField = driver.findElement(By.id("name"));
+            String validationMsg = nameField.getAttribute("validationMessage");
+            
+            System.out.println("\n---------------------------------------");
+            System.out.println("VALIDATION MESSAGE:");
+            System.out.println(validationMsg);
+            System.out.println("");
+            
+            //Verify test passed
+            if (validationMsg != null && !validationMsg.isEmpty()) {
+                System.out.println("\nTHE TEST PASSED! Validation message captured successfully.");
+            } else {
+                System.out.println("\nTHE TEST FAILED! No validation message found.");
+            }
+            
+        } catch (Exception e) {
+            System.err.println("Error occurred: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            Thread.sleep(2000);
+            driver.quit();
+            System.out.println("\nTEST EXECUTION COMPLETED");
+        
+    }
+}
+}
+
+
+
+==============================================================
+
+==============================================================
+
+
+package employee;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.By.ById;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+
+public class Testing {
+	WebDriver driver ;
+	
+//   System.setProperty("webdriver.driver.chromedriver", 
+//				"C:\\Users\\VIJAYASOORIYAN.K\\Downloads\\chromedriver-win32\\chromedriver-win32\\chromedriver.exe");	
+//		
+	@BeforeTest
+	public void openBrowser() {
+		driver = new ChromeDriver();
+				
+		driver.manage().window().maximize();
+		driver.get("http://localhost/employee/admin/index.php");
+		
+	}
+	
+	@Test(priority = 1)
+	public void login() {
+		driver.findElement(By.name("username")).sendKeys("admin");
+		driver.findElement(By.name("password")).sendKeys("admin123");
+		
+		driver.findElement(By.xpath("//*[@id=\"login-frm\"]/button[1]")).click();
+		System.out.println("Login Success");
+		
+		String errormsg = driver.findElement(By.id("error")).getText();
+		System.out.println(errormsg);
+	}
+	
+	@Test(priority = 2,dependsOnMethods = "login")
+	public void search() {
+		driver.findElement(By.id("Employee")).click();
+		driver.findElement(By.xpath("//*[@id=\"table_filter\"]/label/input")).sendKeys("ab");
+		
+		String body = driver.findElement(By.xpath("//*[@id=\"table_filter\"]/label/input")).getText();
+		
+		if(body.contains("ab")) {
+			System.out.println("Data detected");
+		}else {
+			System.out.println("Data not detected");
+		}
+		
+	}
+	
+	
+	@Test(priority = 3,dependsOnMethods = "search")
+	public void update() {
+		driver.findElement(By.xpath("//*[@id=\"table\"]/tbody/tr[1]/td[7]/center/button[1]")).click();
+		driver.findElement(By.xpath("//*[@id=\"new_employee\"]/div/div/div/button/span")).click();
+		
+		
+	}
+	
+	@Test(priority = 4,dependsOnMethods = "update")
+	public void addNew() {
+		driver.findElement(By.id("new_emp_byn")).click();
+		driver.findElement(By.xpath("//*[@id=\"new_employee\"]/div/div/div/button/span")).click();
+		
+	}
+	
+	@Test(priority = 5,dependsOnMethods = "addNew")
+	public void logout() {
+		driver.findElement(By.xpath("/html/body/nav/div/div[2]/a")).click();
+	}
+	
+	@AfterTest
+	public void close() {
+		driver.quit();
+		System.out.println("Browser closed");
+	}
+	
+}
+
+
+
+=======================================================
+
+=======================================================
+
+
+package studentFinal;
+
+import java.time.Duration;
+
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class CA2  {
+
+	public static void main(String[] args) throws InterruptedException {
+		
+		//launch browser
+		System.out.println("Launching Chrome Browser..");
+		WebDriver driver = new ChromeDriver();
+		
+		driver.manage().window().maximize();
+		
+		driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
+		System.out.println("Browser launched succesfully...");
+		
+		//Admin login
+		driver.get("http://localhost/student/admin/");
+		Thread.sleep(2000);
+		String username = "admin";
+		String password = "admin@123";
+		
+		if(username.isEmpty()) {
+			System.out.println("User name is empty..");
+		}else if(password.isEmpty()) {
+			System.out.println("Password is empty");
+		}else {
+			driver.findElement(By.name("username")).sendKeys(username);
+			driver.findElement(By.name("password")).sendKeys(password);
+			driver.findElement(By.cssSelector("button[type='submit']")).click();
+			System.out.println("Login succesfull..");
+			Thread.sleep(2000);
+		}
+		
+		driver.get("http://localhost/student/admin/student.php");
+		Thread.sleep(1000);
+		
+		String CurrentUrl = driver.getCurrentUrl();
+		
+		String expectedUrl = "http://localhost/student/admin/student.php";
+		
+		if(CurrentUrl.equals(expectedUrl)) {
+			System.out.println("URL validation Success...");
+		}else {
+			System.out.println("URL validation Fail....");
+		}
+		
+		
+		driver.findElement(By.cssSelector("input[type='search']")).sendKeys("Ad");
+		System.out.println("Search complted...");
+		Thread.sleep(1000);
+		
+		//AddStudent
+		driver.findElement(By.id("new_std_btn")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.name("firstname")).sendKeys("Stanley");
+		driver.findElement(By.name("lastname")).sendKeys("Lambert");
+		driver.findElement(By.name("grade")).sendKeys("Grade 11");
+		driver.findElement(By.name("phone")).sendKeys("0777123456");
+		
+		driver.findElement(By.xpath("//*[@id=\"new_student\"]/div/div/form/div[2]/button")).click();
+		Thread.sleep(1000);
+		Alert alert = driver.switchTo().alert();
+		System.out.println("Student Saving Alert Message is:"+alert.getText());
+		alert.accept();
+		Thread.sleep(1000);
+		
+		//DeleteCancel
+		driver.findElement(By.xpath("//*[@id=\"table\"]/tbody/tr[1]/td[7]/center/button[2]/i")).click();
+		Thread.sleep(2000);
+		
+		Alert deleteAlert = driver.switchTo().alert();
+		Thread.sleep(2000);
+		System.out.println( "Student Deleting Alert Message is: "+ deleteAlert.getText());
+		deleteAlert.dismiss();
+		System.out.println("Delete Cancelled Succesfully...");
+		
+		//update_student
+		WebElement search = driver.findElement(By.cssSelector("input[type='search']"));
+		search.clear();
+		search.sendKeys("Fred");
+		Thread.sleep(1000);
+		
+		driver.findElement(By.cssSelector(".edit_student")).click();
+		Thread.sleep(1000);
+		WebElement lastname = driver.findElement(By.name("lastname"));
+		lastname.clear();
+		lastname.sendKeys("surya");
+		
+		driver.findElement(By.name("save")).click();
+		Thread.sleep(1000);
+		
+		Alert updateAlert  = driver.switchTo().alert();
+		System.out.println("Student Updating Alert Messags is"+updateAlert.getText());
+		alert.accept();
+		Thread.sleep(1000);
+		
+		
+		//logout
+		driver.findElement(By.xpath("//a[@href='logout.php']")).click();
+		System.out.println("Log out succesfully");
+		
+
+	}
+
+}
+
+
+===================================================
+
+===================================================
+
+
+package studentFinal;
+
+import java.time.Duration;
+
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class retryWithMethod {
+
+    static WebDriver driver;
+
+    public static void main(String[] args) throws InterruptedException {
+
+        launchBrowser();
+
+        login("admin", "admin@123");
+
+        validateURL();
+
+        searchStudent();
+
+        addStudent();
+
+        deleteStudent();
+
+        updateStudent();
+
+        logout();
+
+        driver.quit();
+    }
+
+    // Launch Browser
+    public static void launchBrowser() {
+
+        driver = new ChromeDriver();
+
+        driver.get("http://localhost/student/admin/");
+
+        driver.manage().window().maximize();
+
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
+    }
+
+    // Login Method
+    public static void login(String username, String password) throws InterruptedException {
+
+        if (username.isEmpty()) {
+            System.out.println("Username is empty");
+        } else if (password.isEmpty()) {
+            System.out.println("Password is empty");
+        } else {
+
+            driver.findElement(By.name("username")).sendKeys(username);
+            driver.findElement(By.name("password")).sendKeys(password);
+            driver.findElement(By.xpath("//*[@id=\"login-frm\"]/button[1]")).click();
+
+            System.out.println("Login Successful");
+            Thread.sleep(1000);
+        }
+    }
+
+    // URL Validation
+    public static void validateURL() throws InterruptedException {
+
+        driver.get("http://localhost/student/admin/student.php");
+
+        Thread.sleep(1000);
+
+        String currentURL = driver.getCurrentUrl();
+        String expectedURL = "http://localhost/student/admin/student.php";
+
+        if (currentURL.equals(expectedURL)) {
+            System.out.println("URL Validation Success");
+        } else {
+            System.out.println("URL Validation Failed");
+        }
+    }
+
+    // Search Student
+    public static void searchStudent() throws InterruptedException {
+
+        driver.findElement(By.xpath("//*[@id=\"table_filter\"]/label/input"))
+                .sendKeys("ad");
+
+        Thread.sleep(1000);
+
+        System.out.println("Search Completed");
+    }
+
+    // Add Student
+    public static void addStudent() throws InterruptedException {
+
+        driver.findElement(By.id("new_std_btn")).click();
+
+        Thread.sleep(1000);
+
+        driver.findElement(By.name("firstname")).sendKeys("Stanely");
+        driver.findElement(By.name("lastname")).sendKeys("Lambert");
+        driver.findElement(By.name("grade")).sendKeys("11");
+        driver.findElement(By.name("phone")).sendKeys("0779255336");
+
+        driver.findElement(By.name("save")).click();
+
+        Thread.sleep(1000);
+
+        Alert alert = driver.switchTo().alert();
+
+        System.out.println("Student Saving Alert Message : " + alert.getText());
+
+        alert.accept();
+
+        Thread.sleep(1000);
+    }
+
+    // Delete Student
+    public static void deleteStudent() throws InterruptedException {
+
+        driver.findElement(
+                By.xpath("//*[@id=\"table\"]/tbody/tr[1]/td[7]/center/button[2]"))
+                .click();
+
+        Thread.sleep(1000);
+
+        Alert deleteAlert = driver.switchTo().alert();
+
+        System.out.println("Student Deleting Alert Message : "
+                + deleteAlert.getText());
+
+        deleteAlert.dismiss();
+
+        Thread.sleep(1000);
+
+        System.out.println("Closed the Alert Box");
+    }
+
+    // Update Student
+    public static void updateStudent() throws InterruptedException {
+
+        driver.findElement(
+                By.xpath("//*[@id=\"table\"]/tbody/tr[1]/td[7]/center/button[1]"))
+                .click();
+
+        Thread.sleep(1000);
+
+        WebElement lastname = driver.findElement(By.name("lastname"));
+
+        lastname.clear();
+
+        lastname.sendKeys("Surya");
+
+        Thread.sleep(1000);
+
+        driver.findElement(By.name("save")).click();
+
+        Thread.sleep(1000);
+
+        Alert updateAlert = driver.switchTo().alert();
+
+        System.out.println("Student Updating Alert Message : "
+                + updateAlert.getText());
+
+        updateAlert.accept();
+
+        Thread.sleep(1000);
+    }
+
+    // Logout
+    public static void logout() throws InterruptedException {
+
+        driver.findElement(By.xpath("/html/body/nav/div/div[2]/a")).click();
+
+        Thread.sleep(1000);
+
+        System.out.println("Logout Successfully");
+    }
+}
